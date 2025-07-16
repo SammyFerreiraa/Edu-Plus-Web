@@ -1,0 +1,19 @@
+{
+   "version": "2.0.0",
+   "presentation": {
+      "echo": false,
+      "reveal": "always",
+      "focus": false,
+      "panel": "dedicated",
+      "showReuseMessage": true
+   },
+   "tasks": [
+      {
+         "label": "Prisma Studio(5555)",
+         "type": "shell",
+         "command": "yarn db:studio",
+         "isBackground": false,
+         "problemMatcher": []
+      }
+   ]
+}

@@ -1,0 +1,66 @@
+name: Deploy Dev
+
+on:
+   push:
+      branches:
+         - dev
+   workflow_dispatch:
+
+env:
+   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+   deploy-dev:
+      if: github.event_name == 'workflow_dispatch'
+      runs-on: ubuntu-latest
+
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v4
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v4
+           with:
+              node-version: "20"
+
+         - name: Enable corepack and activate pnpm 10.6.5
+           run: |
+              corepack enable
+              corepack prepare pnpm@10.6.5 --activate
+
+         - name: Setup pnpm cache
+           uses: actions/setup-node@v4
+           with:
+              node-version: "20"
+              cache: "pnpm"
+              cache-dependency-path: pnpm-lock.yaml
+
+         - name: Install dependencies
+           run: pnpm install --frozen-lockfile
+
+         - name: Create .env file
+           run: |
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+              echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+              echo "NODE_ENV=development" >> .env
+              echo "AWS_CLOUDWATCH_REGION=${{ secrets.AWS_CLOUDWATCH_REGION }}" >> .env
+              echo "AWS_CLOUDWATCH_ACCESS_KEY_ID=${{ secrets.AWS_CLOUDWATCH_ACCESS_KEY_ID }}" >> .env
+              echo "AWS_CLOUDWATCH_SECRET_ACCESS_KEY=${{ secrets.AWS_CLOUDWATCH_SECRET_ACCESS_KEY }}" >> .env
+              echo "AWS_CLOUDWATCH_LOG_GROUP_NAME=${{ secrets.AWS_CLOUDWATCH_LOG_GROUP_NAME }}" >> .env
+
+         - name: Migrate database
+           run: pnpm prisma migrate deploy
+
+         - name: Install Vercel CLI
+           run: pnpm install vercel@latest
+
+         - name: Pull Vercel environment
+           run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+         - name: Build with Vercel CLI
+           run: pnpm vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+         - name: Deploy preview to Vercel
+           run: pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
