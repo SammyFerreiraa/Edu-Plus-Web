@@ -129,7 +129,7 @@ export function EditarQuestaoPage({ questaoId }: Props) {
       try {
          await questoesApi.update(questaoId, data);
          alert("Questão atualizada com sucesso!");
-         router.push(`/professor/questoes/${questaoId}`);
+         router.push("/professor/questoes");
       } catch (error) {
          console.error("Erro ao atualizar questão:", error);
          alert("Erro ao atualizar questão. Tente novamente.");
