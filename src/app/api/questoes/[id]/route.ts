@@ -5,8 +5,9 @@ import { checkPermission, Permissions } from "@/common/permissions";
 import { questaoUpdateSchema } from "@/common/schemas/edu-plus";
 import { questoesRepository } from "@/server/routers/questoes/repository";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
    try {
+      const params = await context.params;
       // Verificar autenticação
       const session = await getAuthSession();
       if (!session) {
@@ -38,8 +39,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
    }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
    try {
+      const params = await context.params;
       // Verificar autenticação
       const session = await getAuthSession();
       if (!session) {
@@ -82,8 +84,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
    }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
    try {
+      const params = await context.params;
       // Verificar autenticação
       const session = await getAuthSession();
       if (!session) {
