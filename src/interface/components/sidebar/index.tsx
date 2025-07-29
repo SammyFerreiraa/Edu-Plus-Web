@@ -31,7 +31,7 @@ const SidebarRoot: React.FC<SidebarProps> = ({ children, className }) => {
          {/* Sidebar */}
          <div
             className={cn(
-               "relative z-50 flex h-screen flex-col overflow-hidden border-r border-gray-200 bg-white transition-all duration-300 ease-in-out",
+               "relative z-50 flex h-screen flex-col overflow-hidden bg-[#58876A] shadow-xl transition-all duration-300 ease-in-out",
                // Desktop
                !isMobile && (isOpen ? "w-64" : "w-16"),
                // Mobile
@@ -60,7 +60,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, className, show
    return (
       <div
          className={cn(
-            "flex items-center justify-between border-b border-gray-200 p-4",
+            "flex items-center justify-between border-b border-emerald-500/30 p-4",
             !isMobile && !isOpen && "justify-center p-2",
             className
          )}
@@ -70,7 +70,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, className, show
          {!isOpen && !isMobile && <div className="flex items-center justify-center">{children}</div>}
 
          {isMobile && showCloseButton && (
-            <Button onClick={closeSidebar} variant="ghost" size="icon">
+            <Button onClick={closeSidebar} variant="ghost" size="icon" className="text-white hover:bg-emerald-500/20">
                <X className="h-6 w-6" />
             </Button>
          )}
@@ -85,7 +85,7 @@ type SidebarContentProps = {
 };
 
 const SidebarContent: React.FC<SidebarContentProps> = ({ children, className }) => {
-   return <nav className={cn("flex flex-1 flex-col space-y-1 overflow-y-auto p-4", className)}>{children}</nav>;
+   return <nav className={cn("flex flex-1 flex-col space-y-2 overflow-y-auto p-4", className)}>{children}</nav>;
 };
 
 // Sidebar Item Component
@@ -112,14 +112,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon: Icon, children, c
          href={href}
          className={cn(
             "flex items-center overflow-hidden rounded-lg text-sm font-medium transition-all duration-200",
-            isActive ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
-            isOpen || isMobile ? "w-full justify-start px-3 py-2" : "h-10 w-10 justify-center p-2",
+            isActive
+               ? "bg-[#487157] text-white shadow-md backdrop-blur-sm"
+               : "text-emerald-50 hover:bg-emerald-500/20 hover:text-white",
+            isOpen || isMobile ? "w-full justify-start px-3 py-3" : "h-12 w-12 justify-center p-2",
             className
          )}
          title={!isOpen && !isMobile ? children?.toString() : undefined}
          onClick={handleClick}
       >
-         <Icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-blue-700" : "text-gray-500")} />
+         <Icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-white" : "text-emerald-100")} />
          {(isOpen || isMobile) && <span className="ml-3 whitespace-nowrap">{children}</span>}
       </Link>
    );
@@ -135,7 +137,13 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({ children, className }) =>
    const { isOpen, isMobile } = useSidebar();
 
    return (
-      <div className={cn("border-t border-gray-200 p-4", !isOpen && !isMobile && "flex justify-center p-2", className)}>
+      <div
+         className={cn(
+            "border-t border-emerald-500/30 p-4",
+            !isOpen && !isMobile && "flex justify-center p-2",
+            className
+         )}
+      >
          {children}
       </div>
    );
@@ -171,7 +179,7 @@ type SidebarSeparatorProps = {
 };
 
 const SidebarSeparator: React.FC<SidebarSeparatorProps> = ({ className }) => {
-   return <div className={cn("my-2 w-full border-t border-gray-200", className)} />;
+   return <div className={cn("my-2 w-full border-t border-emerald-500/30", className)} />;
 };
 
 export const Sidebar = Object.assign(SidebarRoot, {

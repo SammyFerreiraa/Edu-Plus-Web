@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BookOpen, FileText, Home, Settings, Users } from "lucide-react";
+import { BookOpen, Database, Home, UserCircle, Users } from "lucide-react";
 import { Sidebar } from "@/interface/components/sidebar";
 import { SidebarProvider } from "@/interface/components/sidebar/context";
 import { Button } from "@/interface/components/ui/button";
@@ -17,33 +17,37 @@ export function ProtectedLayoutClient({ children }: ProtectedLayoutClientProps) 
          <div className="flex h-screen">
             <Sidebar>
                <Sidebar.Header>
-                  <div className="flex items-center gap-2">
-                     <BookOpen className="h-6 w-6 text-blue-600" />
-                     <span className="text-lg font-bold">Template App</span>
+                  <div className="flex items-center gap-3">
+                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
+                        <BookOpen className="h-5 w-5 text-white" />
+                     </div>
+                     <span className="text-xl font-bold text-white">EDU +</span>
                   </div>
                </Sidebar.Header>
 
                <Sidebar.Content>
-                  <Sidebar.Item href="/" icon={Home}>
-                     Dashboard
+                  <Sidebar.Item href="/professor" icon={Home}>
+                     Início
                   </Sidebar.Item>
-                  <Sidebar.Item href="/posts" icon={FileText}>
-                     Posts
+                  <Sidebar.Item href="/professor/turmas" icon={Users}>
+                     Minhas Turmas
                   </Sidebar.Item>
-                  <Sidebar.Item href="/example" icon={Settings}>
-                     Exemplo
+                  <Sidebar.Item href="/professor/questoes" icon={Database}>
+                     Banco de questões
                   </Sidebar.Item>
-                  <Sidebar.Item href="/admin-page" icon={Users}>
-                     Admin
-                  </Sidebar.Item>
-                  <Sidebar.Item href="/member-page" icon={Users}>
-                     Member
+                  <Sidebar.Item href="/professor/perfil" icon={UserCircle}>
+                     Meu perfil
                   </Sidebar.Item>
                </Sidebar.Content>
 
                <Sidebar.Footer>
                   <form action={signOutAction}>
-                     <Button variant="outline" size="sm" type="submit" className="w-full">
+                     <Button
+                        variant="ghost"
+                        size="sm"
+                        type="submit"
+                        className="w-full text-emerald-50 hover:bg-emerald-500/20 hover:text-white"
+                     >
                         Logout
                      </Button>
                   </form>

@@ -38,6 +38,7 @@ export default async function middleware(req: NextRequest) {
 
    if (accessToken) {
       const user = await verifyAccessToken(accessToken);
+
       if (user) {
          const hasPermission = checkRoutePermission(req.nextUrl.pathname, user.role);
 

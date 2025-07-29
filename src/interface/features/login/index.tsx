@@ -45,22 +45,6 @@ export const LoginPage = () => {
                <CardTitle className="text-center text-2xl font-bold">Login</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-               <Button
-                  type="button"
-                  variant="outline"
-                  className="flex w-full items-center justify-center gap-2"
-                  onClick={submitWithGoogle}
-               >
-                  <Google />
-                  Entrar com Google
-               </Button>
-
-               <div className="flex items-center gap-2">
-                  <div className="h-px flex-1 bg-gray-200"></div>
-                  <span className="text-sm text-gray-500">ou</span>
-                  <div className="h-px flex-1 bg-gray-200"></div>
-               </div>
-
                <form className="space-y-4" onSubmit={handleSubmit(submitWithEmail)}>
                   <div className="space-y-2">
                      <InputForm name="email" control={control} label="E-mail" />
