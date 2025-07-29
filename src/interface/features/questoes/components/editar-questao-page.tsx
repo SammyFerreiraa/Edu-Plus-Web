@@ -6,7 +6,6 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { HABILIDADES_POR_SERIE, SERIES_LABELS } from "@/common/constants/edu-plus";
 import { questaoUpdateSchema, type QuestaoUpdateInput } from "@/common/schemas/edu-plus";
-import { apiClient } from "@/config/trpc/react";
 import { Badge } from "@/interface/components/ui/badge";
 import { Button } from "@/interface/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/ui/card";
@@ -14,6 +13,7 @@ import { Checkbox } from "@/interface/components/ui/checkbox";
 import { Input } from "@/interface/components/ui/input";
 import { Label } from "@/interface/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/interface/components/ui/select";
+import { questoesApi, type QuestaoResponse } from "@/services/questoes-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HabilidadeBNCC, SerieLevel } from "@prisma/client";
 import { QuestionType } from "@prisma/client";
@@ -35,13 +35,29 @@ type OpcaoMultiplaEscolha = {
 
 export function EditarQuestaoPage({ questaoId }: Props) {
    const router = useRouter();
-   const utils = apiClient.useUtils();
+   const [questao, setQuestao] = useState<QuestaoResponse | null>(null);
+   const [isLoadingQuestao, setIsLoadingQuestao] = useState(true);
+   const [isSubmitting, setIsSubmitting] = useState(false);
    const [opcoes, setOpcoes] = useState<OpcaoMultiplaEscolha[]>([]);
    const [habilidadesSelecionadas, setHabilidadesSelecionadas] = useState<HabilidadeBNCC[]>([]);
 
-   const { data: questao, isLoading: isLoadingQuestao } = apiClient.questoes.byId.useQuery({
-      id: questaoId
-   });
+   // Carregar questão
+   useEffect(() => {
+      const loadQuestao = async () => {
+         try {
+            const data = await questoesApi.getById(questaoId);
+            setQuestao(data);
+         } catch (error) {
+            console.error("Erro ao carregar questão:", error);
+            alert("Erro ao carregar questão");
+            router.push("/professor/questoes");
+         } finally {
+            setIsLoadingQuestao(false);
+         }
+      };
+
+      void loadQuestao();
+   }, [questaoId, router]);
 
    const {
       register,
@@ -49,7 +65,7 @@ export function EditarQuestaoPage({ questaoId }: Props) {
       watch,
       setValue,
       reset,
-      formState: { errors, isSubmitting }
+      formState: { errors }
    } = useForm<QuestaoUpdateInput>({
       resolver: zodResolver(questaoUpdateSchema)
    });
@@ -64,17 +80,19 @@ export function EditarQuestaoPage({ questaoId }: Props) {
             tipo: questao.tipo,
             serie: questao.serie,
             dificuldade: questao.dificuldade,
-            gabarito: questao.gabarito,
+            gabarito: questao.gabarito || "",
             explicacao: questao.explicacao || ""
          });
 
          setHabilidadesSelecionadas(questao.habilidades);
 
          if (questao.tipo === QuestionType.MULTIPLA_ESCOLHA && questao.opcoes) {
-            const opcoesData = JSON.parse(questao.opcoes);
+            const parsedOpcoes = typeof questao.opcoes === "string" ? JSON.parse(questao.opcoes) : questao.opcoes;
+
             setOpcoes(
-               opcoesData.map((op: any) => ({
-                  ...op,
+               parsedOpcoes.map((op: { id: string; texto: string; correta: boolean }) => ({
+                  id: op.id.toString(),
+                  texto: op.texto,
                   correta: op.id === questao.gabarito
                }))
             );
@@ -82,22 +100,7 @@ export function EditarQuestaoPage({ questaoId }: Props) {
       }
    }, [questao, reset]);
 
-   const updateMutation = apiClient.questoes.update.useMutation({
-      onSuccess: () => {
-         // Invalidar cache para recarregar dados
-         void utils.questoes.list.invalidate();
-         void utils.questoes.byId.invalidate({ id: questaoId });
-         void utils.questoes.estatisticas.invalidate();
-
-         alert("Questão atualizada com sucesso!");
-         router.push(`/professor/questoes/${questaoId}`);
-      },
-      onError: (error) => {
-         alert(`Erro ao atualizar questão: ${error.message}`);
-      }
-   });
-
-   const onSubmit = (data: QuestaoUpdateInput) => {
+   const onSubmit = async (data: QuestaoUpdateInput) => {
       if (data.tipo === QuestionType.MULTIPLA_ESCOLHA) {
          const opcoesValidas = opcoes.filter((op) => op.texto.trim());
          if (opcoesValidas.length < 2) {
@@ -122,10 +125,17 @@ export function EditarQuestaoPage({ questaoId }: Props) {
 
       data.habilidades = habilidadesSelecionadas;
 
-      updateMutation.mutate({
-         id: questaoId,
-         data: data
-      });
+      setIsSubmitting(true);
+      try {
+         await questoesApi.update(questaoId, data);
+         alert("Questão atualizada com sucesso!");
+         router.push(`/professor/questoes/${questaoId}`);
+      } catch (error) {
+         console.error("Erro ao atualizar questão:", error);
+         alert("Erro ao atualizar questão. Tente novamente.");
+      } finally {
+         setIsSubmitting(false);
+      }
    };
 
    const adicionarOpcao = () => {

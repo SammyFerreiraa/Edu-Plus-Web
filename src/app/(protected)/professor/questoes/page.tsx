@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, Edit, Eye, Filter, Plus, Search, Trash2 } from "lucide-react";
+import { BookOpen, Edit, Eye, Filter, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { SERIES_LABELS } from "@/common/constants/edu-plus";
-import { apiClient } from "@/config/trpc/react";
 import { Badge } from "@/interface/components/ui/badge";
 import { Button } from "@/interface/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/ui/card";
@@ -12,6 +11,7 @@ import { Input } from "@/interface/components/ui/input";
 import { Label } from "@/interface/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/interface/components/ui/select";
 import { useSession } from "@/interface/hooks/useSession";
+import { questoesApi } from "@/services/questoes-api";
 import type { HabilidadeBNCC, SerieLevel } from "@prisma/client";
 import { QuestionType, UserRole } from "@prisma/client";
 
@@ -36,12 +36,56 @@ type FiltrosQuestoes = {
    search?: string;
 };
 
+type QuestaoResponse = {
+   id: string;
+   enunciado: string;
+   tipo: QuestionType;
+   serie: SerieLevel;
+   habilidades: HabilidadeBNCC[];
+   dificuldade: number;
+   ativa: boolean;
+   createdAt: string;
+   professor: {
+      id: string;
+      name: string;
+   };
+   _count?: {
+      tentativas: number;
+   };
+};
+
+type QuestoesListResponse = {
+   questoes: QuestaoResponse[];
+   total: number;
+   page: number;
+   limit: number;
+   totalPages: number;
+};
+
 export default function QuestoesPageWrapper() {
    const { user } = useSession();
    const [filtros, setFiltros] = useState<FiltrosQuestoes>({});
    const [searchInput, setSearchInput] = useState(""); // Estado para o input de busca
    const [page, setPage] = useState(0);
-   const utils = apiClient.useUtils();
+   const [questoesData, setQuestoesData] = useState<QuestoesListResponse | null>(null);
+   const [isLoading, setIsLoading] = useState(false);
+
+   // Carregar questões
+   const loadQuestoes = async () => {
+      setIsLoading(true);
+      try {
+         const data = await questoesApi.list({
+            ...filtros,
+            page,
+            limit: 12
+         });
+         setQuestoesData(data);
+      } catch (error) {
+         console.error("Erro ao carregar questões:", error);
+      } finally {
+         setIsLoading(false);
+      }
+   };
 
    // Debounce para busca - só aplica o filtro após 500ms sem digitar
    useEffect(() => {
@@ -52,20 +96,10 @@ export default function QuestoesPageWrapper() {
       return () => clearTimeout(debounceTimeout);
    }, [searchInput]);
 
-   // Query para buscar questões com filtros
-   const { data: questoesData, isLoading } = apiClient.questoes.list.useQuery({
-      ...filtros,
-      page,
-      limit: 12
-   });
-
-   // Mutation para excluir questão
-   const deleteMutation = apiClient.questoes.delete.useMutation({
-      onSuccess: () => {
-         void utils.questoes.list.invalidate();
-         void utils.questoes.estatisticas.invalidate();
-      }
-   });
+   // Recarregar quando filtros ou página mudarem
+   useEffect(() => {
+      void loadQuestoes();
+   }, [filtros, page]);
 
    const handleExcluirQuestao = async (questaoId: string, enunciado: string) => {
       const confirmacao = confirm(
@@ -74,7 +108,8 @@ export default function QuestoesPageWrapper() {
 
       if (confirmacao) {
          try {
-            await deleteMutation.mutateAsync({ id: questaoId });
+            await questoesApi.delete(questaoId);
+            await loadQuestoes();
          } catch (error) {
             console.error("Erro ao excluir questão:", error);
          }
@@ -296,7 +331,7 @@ export default function QuestoesPageWrapper() {
                   ))}
                </div>
 
-               {questoesData.hasNext && (
+               {questoesData && questoesData.page < questoesData.totalPages - 1 && (
                   <div className="flex justify-center pt-6">
                      <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={isLoading}>
                         Carregar mais questões

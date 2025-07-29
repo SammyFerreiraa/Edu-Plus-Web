@@ -1,12 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SERIES_LABELS } from "@/common/constants/edu-plus";
-import { apiClient } from "@/config/trpc/react";
 import { Badge } from "@/interface/components/ui/badge";
 import { Button } from "@/interface/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/ui/card";
+import { questoesApi, type QuestaoResponse } from "@/services/questoes-api";
 import { QuestionType } from "@prisma/client";
 
 type Props = {
@@ -22,27 +23,43 @@ const TIPOS_QUESTAO_LABELS = {
 
 export function VisualizarQuestaoPage({ questaoId }: Props) {
    const router = useRouter();
-   const utils = apiClient.useUtils();
+   const [questao, setQuestao] = useState<QuestaoResponse | null>(null);
+   const [isLoading, setIsLoading] = useState(true);
+   const [isDeleting, setIsDeleting] = useState(false);
+   const [error, setError] = useState<string | null>(null);
 
-   const { data: questao, isLoading, error } = apiClient.questoes.byId.useQuery({ id: questaoId });
+   // Carregar questão
+   useEffect(() => {
+      const loadQuestao = async () => {
+         try {
+            const data = await questoesApi.getById(questaoId);
+            setQuestao(data);
+         } catch (error) {
+            console.error("Erro ao carregar questão:", error);
+            setError("Erro ao carregar questão");
+         } finally {
+            setIsLoading(false);
+         }
+      };
 
-   const deleteMutation = apiClient.questoes.delete.useMutation({
-      onSuccess: () => {
-         // Invalidar cache para recarregar dados
-         void utils.questoes.list.invalidate();
-         void utils.questoes.estatisticas.invalidate();
+      void loadQuestao();
+   }, [questaoId]);
 
+   const handleDelete = async () => {
+      if (!confirm("Tem certeza que deseja excluir esta questão?")) {
+         return;
+      }
+
+      setIsDeleting(true);
+      try {
+         await questoesApi.delete(questaoId);
          alert("Questão excluída com sucesso!");
          router.push("/professor/questoes");
-      },
-      onError: (error) => {
-         alert(`Erro ao excluir questão: ${error.message}`);
-      }
-   });
-
-   const handleDelete = () => {
-      if (confirm("Tem certeza que deseja excluir esta questão?")) {
-         deleteMutation.mutate({ id: questaoId });
+      } catch (error) {
+         console.error("Erro ao excluir questão:", error);
+         alert("Erro ao excluir questão");
+      } finally {
+         setIsDeleting(false);
       }
    };
 
@@ -72,7 +89,11 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
       );
    }
 
-   const opcoes = questao.opcoes ? JSON.parse(questao.opcoes) : [];
+   const opcoes = questao.opcoes
+      ? typeof questao.opcoes === "string"
+         ? JSON.parse(questao.opcoes)
+         : questao.opcoes
+      : [];
 
    return (
       <div className="container mx-auto py-6">
@@ -108,11 +129,11 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
                   <Button
                      variant="destructive"
                      onClick={handleDelete}
-                     disabled={deleteMutation.isPending}
+                     disabled={isDeleting}
                      className="flex items-center space-x-2"
                   >
                      <Trash2 className="h-4 w-4" />
-                     <span>{deleteMutation.isPending ? "Excluindo..." : "Excluir"}</span>
+                     <span>{isDeleting ? "Excluindo..." : "Excluir"}</span>
                   </Button>
                </div>
             </div>
@@ -132,7 +153,9 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
                      </div>
                      <div>
                         <h4 className="mb-2 font-medium text-gray-900">Tipo</h4>
-                        <Badge variant="outline">{TIPOS_QUESTAO_LABELS[questao.tipo]}</Badge>
+                        <Badge variant="outline">
+                           {TIPOS_QUESTAO_LABELS[questao.tipo as keyof typeof TIPOS_QUESTAO_LABELS]}
+                        </Badge>
                      </div>
                      <div>
                         <h4 className="mb-2 font-medium text-gray-900">Dificuldade</h4>
@@ -174,7 +197,7 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
                   </CardHeader>
                   <CardContent>
                      <div className="space-y-3">
-                        {opcoes.map((opcao: any, index: number) => (
+                        {opcoes.map((opcao: { id: string; texto: string; correta: boolean }, index: number) => (
                            <div
                               key={opcao.id}
                               className={`flex items-center space-x-3 rounded-lg border p-3 ${
@@ -230,7 +253,7 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
                </CardHeader>
                <CardContent>
                   <div className="flex flex-wrap gap-2">
-                     {questao.habilidades.map((habilidade) => (
+                     {questao.habilidades.map((habilidade: string) => (
                         <Badge key={habilidade} variant="secondary">
                            {habilidade}
                         </Badge>

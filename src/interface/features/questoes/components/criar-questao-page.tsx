@@ -6,7 +6,6 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { HABILIDADES_POR_SERIE, SERIES_LABELS } from "@/common/constants/edu-plus";
 import { type QuestaoCreateInput } from "@/common/schemas/edu-plus";
-import { apiClient } from "@/config/trpc/react";
 import { Badge } from "@/interface/components/ui/badge";
 import { Button } from "@/interface/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/ui/card";
@@ -14,6 +13,7 @@ import { Checkbox } from "@/interface/components/ui/checkbox";
 import { Input } from "@/interface/components/ui/input";
 import { Label } from "@/interface/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/interface/components/ui/select";
+import { questoesApi } from "@/services/questoes-api";
 import type { HabilidadeBNCC, SerieLevel } from "@prisma/client";
 import { QuestionType } from "@prisma/client";
 
@@ -31,7 +31,7 @@ type OpcaoMultiplaEscolha = {
 
 export function CriarQuestaoPage() {
    const router = useRouter();
-   const utils = apiClient.useUtils();
+   const [isSubmitting, setIsSubmitting] = useState(false);
    const [opcoes, setOpcoes] = useState<OpcaoMultiplaEscolha[]>([
       { id: "1", texto: "", correta: false },
       { id: "2", texto: "", correta: false }
@@ -43,7 +43,7 @@ export function CriarQuestaoPage() {
       handleSubmit,
       watch,
       setValue,
-      formState: { errors, isSubmitting }
+      formState: { errors }
    } = useForm<QuestaoCreateInput>({
       mode: "onChange", // Validar em tempo real
       defaultValues: {
@@ -58,21 +58,7 @@ export function CriarQuestaoPage() {
    const tipoSelecionado = watch("tipo");
    const serieSelecionada = watch("serie");
 
-   const createMutation = apiClient.questoes.create.useMutation({
-      onSuccess: () => {
-         // Invalidar cache para recarregar a lista
-         void utils.questoes.list.invalidate();
-         void utils.questoes.estatisticas.invalidate();
-
-         alert("Questão criada com sucesso!");
-         router.push("/professor/questoes");
-      },
-      onError: (error) => {
-         alert(`Erro ao criar questão: ${error.message}`);
-      }
-   });
-
-   const onSubmit = (data: QuestaoCreateInput) => {
+   const onSubmit = async (data: QuestaoCreateInput) => {
       // Validação simples e direta
       if (!data.enunciado || data.enunciado.trim().length < 3) {
          alert("Enunciado deve ter pelo menos 3 caracteres.");
@@ -133,7 +119,18 @@ export function CriarQuestaoPage() {
       }
 
       console.log("Dados sendo enviados:", data);
-      createMutation.mutate(data);
+
+      setIsSubmitting(true);
+      try {
+         await questoesApi.create(data);
+         alert("Questão criada com sucesso!");
+         router.push("/professor/questoes");
+      } catch (error) {
+         console.error("Erro ao criar questão:", error);
+         alert("Erro ao criar questão. Tente novamente.");
+      } finally {
+         setIsSubmitting(false);
+      }
    };
 
    const adicionarOpcao = () => {
