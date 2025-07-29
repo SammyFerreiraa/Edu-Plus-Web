@@ -6,7 +6,7 @@ const apenasAdmin = [UserRole.ADMIN];
 const professorEAdmin = [UserRole.ADMIN, UserRole.PROFESSOR];
 
 // Rotas públicas (não precisam de autenticação)
-export const publicRoutes = ["/login", "/auth/verify-token", "/unauthorized", "/cadastro"];
+export const publicRoutes = ["/login", "/auth/verify-token", "/unauthorized", "/cadastro", "/aluno"];
 
 // Configuração de permissões por rota baseada nas regras de negócio do EDU+
 export const routesPermissions = [
