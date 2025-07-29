@@ -19,11 +19,18 @@ export default function AlunoDashboardPage({ params }: Props) {
    const [dadosAluno, setDadosAluno] = useState<AlunoTurmaResponse | null>(null);
    const [atividades, setAtividades] = useState<ListaExerciciosResponse[]>([]);
    const [isLoading, setIsLoading] = useState(true);
+   const [isMounted, setIsMounted] = useState(false);
 
    useEffect(() => {
+      setIsMounted(true);
+   }, []);
+
+   useEffect(() => {
+      if (!isMounted) return;
+
       const carregarDados = async () => {
          try {
-            // Primeiro, tentar carregar dados do localStorage
+            // Primeiro, tentar carregar dados do localStorage (apenas no cliente)
             const dadosLocalStorage = localStorage.getItem("dadosAluno");
             if (dadosLocalStorage) {
                const dados = JSON.parse(dadosLocalStorage);
@@ -45,14 +52,16 @@ export default function AlunoDashboardPage({ params }: Props) {
       };
 
       void carregarDados();
-   }, [resolvedParams.alunoId, router]);
+   }, [resolvedParams.alunoId, router, isMounted]);
 
    const handleIniciarAtividade = (listaId: string) => {
       router.push(`/aluno/${resolvedParams.alunoId}/atividade/${listaId}`);
    };
 
    const handleSair = () => {
-      localStorage.removeItem("dadosAluno");
+      if (typeof window !== "undefined") {
+         localStorage.removeItem("dadosAluno");
+      }
       router.push("/aluno");
    };
 

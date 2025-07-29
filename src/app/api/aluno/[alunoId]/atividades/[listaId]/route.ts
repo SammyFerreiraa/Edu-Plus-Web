@@ -21,16 +21,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
          include: {
             questoes: {
                include: {
-                  questao: {
-                     include: {
-                        tentativas: {
-                           where: { alunoId },
-                           orderBy: { respondidaEm: "desc" }
-                        }
-                     }
-                  }
+                  questao: true
                },
                orderBy: { ordem: "asc" }
+            },
+            // Buscar tentativas específicas desta lista
+            tentativas: {
+               where: { alunoId },
+               include: {
+                  tentativasQuestao: true
+               }
             }
          }
       });
@@ -47,12 +47,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       let questoesRespondidas = 0;
       let questoesCorretas = 0;
 
-      const questoesComTentativas = lista.questoes.map((questaoLista: any) => {
-         const questao = questaoLista.questao;
-         const tentativas = questao.tentativas || [];
-         const acertou = tentativas.some((t: { correta: boolean }) => t.correta);
+      // Obter tentativas desta lista específica
+      const tentativaLista = lista.tentativas[0]; // Só pode haver uma tentativa por aluno/lista
+      const tentativasQuestoes = tentativaLista?.tentativasQuestao || [];
 
-         if (tentativas.length > 0) {
+      const questoesComTentativas = lista.questoes.map((questaoLista) => {
+         const questao = questaoLista.questao;
+
+         // Buscar tentativas desta questão específica NESTA lista
+         const tentativasDestaQuestao = tentativasQuestoes.filter((t) => t.questaoId === questao.id);
+         const acertou = tentativasDestaQuestao.some((t) => t.correta);
+
+         if (tentativasDestaQuestao.length > 0) {
             questoesRespondidas++;
             if (acertou) {
                questoesCorretas++;
@@ -67,7 +73,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             gabarito: questao.gabarito,
             explicacao: questao.explicacao,
             dificuldade: questao.dificuldade,
-            tentativas: tentativas.map((t: any) => ({
+            tentativas: tentativasDestaQuestao.map((t) => ({
                id: t.id,
                resposta: t.resposta,
                correta: t.correta,
@@ -76,7 +82,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                createdAt: t.respondidaEm.toISOString()
             })),
             acertou,
-            numeroTentativas: tentativas.length
+            numeroTentativas: tentativasDestaQuestao.length
          };
       });
 

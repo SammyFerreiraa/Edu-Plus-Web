@@ -19,7 +19,7 @@ export const listaExerciciosRepository = {
             professorId: data.professorId,
             dataLiberacao: data.dataLiberacao ? new Date(data.dataLiberacao) : null,
             dataLimite: data.dataLimite ? new Date(data.dataLimite) : null,
-            status: "RASCUNHO" as ExerciseStatus,
+            status: "PUBLICADO" as ExerciseStatus,
             questoes: {
                create: data.questoesIds.map((questaoId, index) => ({
                   questaoId,

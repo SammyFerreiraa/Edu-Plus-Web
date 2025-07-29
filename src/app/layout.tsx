@@ -7,17 +7,17 @@ import { TRPCReactProvider } from "@/config/trpc/react";
 import { ModalContainer } from "@/interface/components/modal";
 
 export const metadata: Metadata = {
-   title: "Template",
-   description: "Template",
+   title: "EDU +",
+   description: "Plataforma educacional",
    icons: [{ rel: "icon", url: "/favicon.ico" }]
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
    return (
       <html lang="en" className={`${GeistSans.variable}`}>
-         <ModalContainer />
          <NuqsAdapter>
-            <body>
+            <body suppressHydrationWarning={true}>
+               <ModalContainer />
                <Toaster toastOptions={{ duration: 2000 }} />
                <TRPCReactProvider>{children}</TRPCReactProvider>
             </body>

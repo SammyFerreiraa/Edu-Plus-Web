@@ -42,11 +42,34 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
          return NextResponse.json({ error: "Questão não encontrada" }, { status: 404 });
       }
 
-      // Verificar quantas tentativas o aluno já fez nesta questão
+      // Verificar se o aluno já possui uma tentativa de lista iniciada
+      let tentativaLista = await prisma.tentativaLista.findUnique({
+         where: {
+            alunoId_listaId: {
+               alunoId,
+               listaId
+            }
+         }
+      });
+
+      // Se não existe, criar uma nova tentativa de lista
+      if (!tentativaLista) {
+         tentativaLista = await prisma.tentativaLista.create({
+            data: {
+               alunoId,
+               listaId,
+               status: "EM_PROGRESSO",
+               iniciadaEm: new Date()
+            }
+         });
+      }
+
+      // Verificar quantas tentativas o aluno já fez nesta questão DESTA LISTA
       const tentativasAnteriores = await prisma.tentativaQuestao.findMany({
          where: {
             alunoId,
-            questaoId
+            questaoId,
+            tentativaListaId: tentativaLista.id // Filtrar por lista específica
          }
       });
 
@@ -75,11 +98,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
          pontuacao = Math.max(10 - (numeroTentativa - 1) * 2, 1);
       }
 
-      // Criar a tentativa
+      // Criar a tentativa vinculada à lista específica
       const tentativa = await prisma.tentativaQuestao.create({
          data: {
             alunoId,
             questaoId,
+            tentativaListaId: tentativaLista.id, // Importante: vincular à lista
             resposta: JSON.stringify({ valor: resposta }),
             correta,
             pontuacao,
