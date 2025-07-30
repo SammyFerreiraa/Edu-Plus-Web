@@ -30,12 +30,7 @@ const setSidebarCookie = (value: string) => {
 };
 
 export const SidebarProvider = ({ children, defaultOpen = true }: { children: ReactNode; defaultOpen?: boolean }) => {
-   const [isOpen, setIsOpen] = useState(() => {
-      if (typeof window === "undefined") return defaultOpen;
-      const savedState = getCookieValue(SIDEBAR_COOKIE_NAME);
-      return savedState !== null ? savedState === "true" : defaultOpen;
-   });
-
+   const [isOpen, setIsOpen] = useState(defaultOpen);
    const [isMobile, setIsMobile] = useState(false);
    const [isInitialized, setIsInitialized] = useState(false);
 

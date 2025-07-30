@@ -32,12 +32,12 @@ const SidebarRoot: React.FC<SidebarProps> = ({ children, className }) => {
          <div
             className={cn(
                "relative z-50 flex h-screen flex-col overflow-hidden bg-[#58876A] shadow-xl transition-all duration-300 ease-in-out",
-               // Desktop
+               // Desktop - sempre mostrar o sidebar, apenas alterar largura
                !isMobile && (isOpen ? "w-64" : "w-16"),
-               // Mobile
+               // Mobile - fixo e escondido/mostrado com translate
                isMobile && "fixed inset-y-0 left-0 w-64",
                isMobile && (isOpen ? "translate-x-0" : "-translate-x-full"),
-               !isMobile && "sticky top-0 h-screen",
+               !isMobile && "sticky top-0",
                className
             )}
          >
@@ -65,7 +65,10 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ children, className, show
             className
          )}
       >
-         <div className={cn("flex items-center", !isOpen && !isMobile && "hidden")}>{children}</div>
+         <div className={cn("flex items-center gap-2", !isOpen && !isMobile && "hidden")}>
+            {children}
+            {isOpen && <span className="text-xl font-bold text-white">EDU +</span>}
+         </div>
 
          {!isOpen && !isMobile && <div className="flex items-center justify-center">{children}</div>}
 
@@ -85,7 +88,14 @@ type SidebarContentProps = {
 };
 
 const SidebarContent: React.FC<SidebarContentProps> = ({ children, className }) => {
-   return <nav className={cn("flex flex-1 flex-col space-y-2 overflow-y-auto p-4", className)}>{children}</nav>;
+   const { isOpen } = useSidebar();
+   return (
+      <nav
+         className={cn("flex flex-1 flex-col items-center space-y-2 overflow-y-auto py-4", isOpen && "px-4", className)}
+      >
+         {children}
+      </nav>
+   );
 };
 
 // Sidebar Item Component

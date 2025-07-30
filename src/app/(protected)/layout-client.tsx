@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { BookOpen, Database, Home, UserCircle, Users } from "lucide-react";
+import { AppHeader } from "@/interface/components/app-header";
 import { Sidebar } from "@/interface/components/sidebar";
 import { SidebarProvider } from "@/interface/components/sidebar/context";
 import { Button } from "@/interface/components/ui/button";
@@ -13,7 +14,7 @@ interface ProtectedLayoutClientProps {
 
 export function ProtectedLayoutClient({ children }: ProtectedLayoutClientProps) {
    return (
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={true}>
          <div className="flex h-screen">
             <Sidebar>
                <Sidebar.Header>
@@ -21,7 +22,6 @@ export function ProtectedLayoutClient({ children }: ProtectedLayoutClientProps) 
                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
                         <BookOpen className="h-5 w-5 text-white" />
                      </div>
-                     <span className="text-xl font-bold text-white">EDU +</span>
                   </div>
                </Sidebar.Header>
 
@@ -54,7 +54,10 @@ export function ProtectedLayoutClient({ children }: ProtectedLayoutClientProps) 
                </Sidebar.Footer>
             </Sidebar>
 
-            <main className="flex-1 overflow-auto p-6">{children}</main>
+            <div className="flex flex-1 flex-col overflow-hidden">
+               <AppHeader />
+               <main className="flex-1 overflow-auto p-6">{children}</main>
+            </div>
          </div>
       </SidebarProvider>
    );
