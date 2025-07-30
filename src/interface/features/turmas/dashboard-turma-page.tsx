@@ -234,11 +234,11 @@ export function DashboardTurmaPage() {
 
    if (!turmaId) {
       return (
-         <div className="flex min-h-screen items-center justify-center">
+         <div className="flex min-h-screen items-center justify-center px-4">
             <div className="text-center">
-               <h1 className="text-2xl font-bold text-red-600">Erro</h1>
-               <p className="mt-2 text-gray-600">ID da turma não fornecido</p>
-               <Button onClick={() => router.push("/professor/turmas")} className="mt-4">
+               <h1 className="text-xl font-bold text-red-600 sm:text-2xl">Erro</h1>
+               <p className="mt-2 text-sm text-gray-600 sm:text-base">ID da turma não fornecido</p>
+               <Button onClick={() => router.push("/professor/turmas")} className="mt-4 w-full sm:w-auto">
                   Voltar para Turmas
                </Button>
             </div>
@@ -249,33 +249,33 @@ export function DashboardTurmaPage() {
    if (isLoading) {
       return (
          <div className="min-h-screen">
-            {/* Header */}
-            <div className="border-b border-gray-200 bg-white px-6 py-4">
+            {/* Header Mobile/Desktop */}
+            <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 sm:space-x-4">
                      <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => router.back()}
-                        className="flex items-center space-x-2"
+                        className="flex items-center space-x-1 sm:space-x-2"
                      >
                         <ArrowLeft className="h-4 w-4" />
-                        <span>Voltar</span>
+                        <span className="hidden sm:inline">Voltar</span>
                      </Button>
-                     <div className="h-6 border-l border-gray-300" />
-                     <div className="h-6 w-48 animate-pulse rounded bg-gray-200"></div>
+                     <div className="hidden h-6 border-l border-gray-300 sm:block" />
+                     <div className="h-6 w-32 animate-pulse rounded bg-gray-200 sm:w-48"></div>
                   </div>
                </div>
             </div>
 
             {/* Loading */}
-            <div className="mx-auto max-w-7xl px-6 py-8">
-               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+               <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {[...Array(6)].map((_, i) => (
                      <Card key={i}>
-                        <CardContent className="p-6">
+                        <CardContent className="p-4 sm:p-6">
                            <div className="h-4 w-full animate-pulse rounded bg-gray-200"></div>
-                           <div className="mt-2 h-8 w-20 animate-pulse rounded bg-gray-200"></div>
+                           <div className="mt-2 h-6 w-16 animate-pulse rounded bg-gray-200 sm:h-8 sm:w-20"></div>
                         </CardContent>
                      </Card>
                   ))}
@@ -287,11 +287,11 @@ export function DashboardTurmaPage() {
 
    if (!turma) {
       return (
-         <div className="flex min-h-screen items-center justify-center">
+         <div className="flex min-h-screen items-center justify-center px-4">
             <div className="text-center">
-               <h1 className="text-2xl font-bold text-red-600">Turma não encontrada</h1>
-               <p className="mt-2 text-gray-600">A turma solicitada não existe ou foi removida</p>
-               <Button onClick={() => router.push("/professor/turmas")} className="mt-4">
+               <h1 className="text-xl font-bold text-red-600 sm:text-2xl">Turma não encontrada</h1>
+               <p className="mt-2 text-sm text-gray-600 sm:text-base">A turma solicitada não existe ou foi removida</p>
+               <Button onClick={() => router.push("/professor/turmas")} className="mt-4 w-full sm:w-auto">
                   Voltar para Turmas
                </Button>
             </div>
@@ -301,25 +301,28 @@ export function DashboardTurmaPage() {
 
    return (
       <div className="min-h-screen bg-gray-50">
-         {/* Header */}
-         <div className="border-b border-gray-200 bg-white px-6 py-4">
+         {/* Header Responsivo */}
+         <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
             <div className="flex items-center justify-between">
-               <div className="flex items-center space-x-4">
+               <div className="flex min-w-0 flex-1 items-center space-x-2 sm:space-x-4">
                   <Button
                      variant="ghost"
                      size="sm"
                      onClick={() => router.back()}
-                     className="flex items-center space-x-2"
+                     className="flex flex-shrink-0 items-center space-x-1 sm:space-x-2"
                   >
                      <ArrowLeft className="h-4 w-4" />
-                     <span>Voltar</span>
+                     <span className="hidden sm:inline">Voltar</span>
                   </Button>
-                  <div className="h-6 border-l border-gray-300" />
-                  <div>
-                     <h1 className="text-2xl font-bold text-gray-900">{turma.nome}</h1>
-                     <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <Badge variant="secondary">{turma.serie.replace("_", " ")}</Badge>
-                        <span>Ano letivo: {turma.anoLetivo}</span>
+                  <div className="hidden h-6 border-l border-gray-300 sm:block" />
+                  <div className="min-w-0 flex-1">
+                     <h1 className="truncate text-lg font-bold text-gray-900 sm:text-2xl">{turma.nome}</h1>
+                     <div className="mt-1 flex flex-col space-y-1 text-xs text-gray-600 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4 sm:text-sm">
+                        <Badge variant="secondary" className="w-fit">
+                           {turma.serie.replace("_", " ")}
+                        </Badge>
+                        <span className="hidden sm:inline">Ano letivo: {turma.anoLetivo}</span>
+                        <span className="sm:hidden">{turma.anoLetivo}</span>
                      </div>
                   </div>
                </div>
@@ -327,13 +330,13 @@ export function DashboardTurmaPage() {
          </div>
 
          {/* Dashboard Content */}
-         <div className="mx-auto max-w-7xl px-6 py-8">
+         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
             {/* Stats Cards */}
             <TurmaStats totalAlunos={turma.alunos?.length || 0} totalListas={turma._count?.listas || 0} />
 
-            {/* Main Content */}
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-               {/* Lista de Alunos */}
+            {/* Main Content - Layout Responsivo */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+               {/* Lista de Alunos - Ocupa mais espaço em desktop */}
                <div className="lg:col-span-2">
                   <AlunosList
                      alunos={turma.alunos || []}
@@ -343,7 +346,7 @@ export function DashboardTurmaPage() {
                   />
                </div>
 
-               {/* Sidebar com informações adicionais */}
+               {/* Sidebar - Stack em mobile, sidebar em desktop */}
                <div className="space-y-6">
                   <ListasExercicios
                      listas={listasExercicios || []}

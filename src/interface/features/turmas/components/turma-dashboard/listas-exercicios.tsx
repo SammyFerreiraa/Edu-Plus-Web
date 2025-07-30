@@ -81,63 +81,109 @@ export function ListasExercicios({ listas, onCriarLista, onEditarLista, onDeleta
 
    return (
       <Card>
-         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle>Listas de Exercícios</CardTitle>
-            <Button onClick={onCriarLista} size="sm">
+         <CardHeader className="flex flex-col space-y-3 pb-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <CardTitle className="text-lg sm:text-xl">Listas de Exercícios</CardTitle>
+            <Button onClick={onCriarLista} size="sm" className="w-full sm:w-auto">
                <Plus className="mr-2 h-4 w-4" />
-               Nova Lista
+               <span className="sm:hidden">Nova Lista</span>
+               <span className="hidden sm:inline">Nova Lista</span>
             </Button>
          </CardHeader>
-         <CardContent>
+         <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">
             {listas && listas.length > 0 ? (
                <div className="space-y-3">
                   {listas.map((lista) => (
-                     <div
-                        key={lista.id}
-                        className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-gray-50"
-                     >
-                        <div className="flex-1">
-                           <h4 className="font-medium">{lista.titulo}</h4>
-                           {lista.descricao && <p className="mt-1 text-sm text-gray-600">{lista.descricao}</p>}
-                           <div className="mt-2 flex items-center space-x-2 text-xs text-gray-500">
-                              <span>{lista.questoes?.length || 0} questões</span>
-                              {lista.dataLiberacao && (
-                                 <span>• Liberado em {new Date(lista.dataLiberacao).toLocaleDateString()}</span>
-                              )}
-                              {lista.dataLimite && <span>• Até {new Date(lista.dataLimite).toLocaleDateString()}</span>}
+                     <div key={lista.id} className="rounded-lg border transition-colors hover:bg-gray-50">
+                        {/* Layout Mobile */}
+                        <div className="block p-3 sm:hidden">
+                           <div className="mb-3">
+                              <h4 className="font-medium">{lista.titulo}</h4>
+                              {lista.descricao && <p className="mt-1 text-sm text-gray-600">{lista.descricao}</p>}
+                              <div className="mt-2 space-y-1 text-xs text-gray-500">
+                                 <div>{lista.questoes?.length || 0} questões</div>
+                                 {lista.dataLiberacao && (
+                                    <div>Liberado: {new Date(lista.dataLiberacao).toLocaleDateString()}</div>
+                                 )}
+                                 {lista.dataLimite && (
+                                    <div>Limite: {new Date(lista.dataLimite).toLocaleDateString()}</div>
+                                 )}
+                              </div>
+                           </div>
+                           <div className="flex gap-2">
+                              <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => handleEditarLista(lista)}
+                                 className="flex-1"
+                              >
+                                 <Edit className="mr-2 h-4 w-4" />
+                                 Editar
+                              </Button>
+                              <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => {
+                                    if (confirm(`Tem certeza que deseja excluir a lista "${lista.titulo}"?`)) {
+                                       onDeletarLista(lista.id, lista.titulo);
+                                    }
+                                 }}
+                                 className="flex-1 text-red-600 hover:text-red-800"
+                              >
+                                 <Trash2 className="mr-2 h-4 w-4" />
+                                 Excluir
+                              </Button>
                            </div>
                         </div>
-                        <div className="flex items-center space-x-1">
-                           <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditarLista(lista)}
-                              className="h-8 w-8 p-0"
-                           >
-                              <Edit className="h-3 w-3" />
-                           </Button>
-                           <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                 if (confirm(`Tem certeza que deseja excluir a lista "${lista.titulo}"?`)) {
-                                    onDeletarLista(lista.id, lista.titulo);
-                                 }
-                              }}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
-                           >
-                              <Trash2 className="h-3 w-3" />
-                           </Button>
+
+                        {/* Layout Desktop */}
+                        <div className="hidden p-3 sm:flex sm:items-center sm:justify-between">
+                           <div className="flex-1">
+                              <h4 className="font-medium">{lista.titulo}</h4>
+                              {lista.descricao && <p className="mt-1 text-sm text-gray-600">{lista.descricao}</p>}
+                              <div className="mt-2 flex items-center space-x-2 text-xs text-gray-500">
+                                 <span>{lista.questoes?.length || 0} questões</span>
+                                 {lista.dataLiberacao && (
+                                    <span>• Liberado em {new Date(lista.dataLiberacao).toLocaleDateString()}</span>
+                                 )}
+                                 {lista.dataLimite && (
+                                    <span>• Até {new Date(lista.dataLimite).toLocaleDateString()}</span>
+                                 )}
+                              </div>
+                           </div>
+                           <div className="flex items-center space-x-1">
+                              <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => handleEditarLista(lista)}
+                                 className="h-8 w-8 p-0"
+                              >
+                                 <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => {
+                                    if (confirm(`Tem certeza que deseja excluir a lista "${lista.titulo}"?`)) {
+                                       onDeletarLista(lista.id, lista.titulo);
+                                    }
+                                 }}
+                                 className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
+                              >
+                                 <Trash2 className="h-3 w-3" />
+                              </Button>
+                           </div>
                         </div>
                      </div>
                   ))}
                </div>
             ) : (
-               <div className="py-8 text-center">
-                  <BookOpen className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                  <h3 className="mb-2 text-lg font-medium text-gray-900">Nenhuma lista criada</h3>
-                  <p className="mb-4 text-gray-600">Crie a primeira lista de exercícios para a turma</p>
-                  <Button onClick={onCriarLista} size="sm">
+               <div className="py-6 text-center sm:py-8">
+                  <BookOpen className="mx-auto mb-4 h-10 w-10 text-gray-400 sm:h-12 sm:w-12" />
+                  <h3 className="mb-2 text-base font-medium text-gray-900 sm:text-lg">Nenhuma lista criada</h3>
+                  <p className="mb-4 text-sm text-gray-600 sm:text-base">
+                     Crie a primeira lista de exercícios para a turma
+                  </p>
+                  <Button onClick={onCriarLista} size="sm" className="w-full sm:w-auto">
                      <Plus className="mr-2 h-4 w-4" />
                      Criar primeira lista
                   </Button>
