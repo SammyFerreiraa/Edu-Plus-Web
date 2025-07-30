@@ -54,20 +54,20 @@ export function ProfessorDashboard() {
    };
 
    return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen">
          {/* Header */}
-         <div className="border-b border-green-100 bg-white">
+         <div className="bg-white">
             <div className="mx-auto max-w-7xl px-6 py-4">
                <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                     <h1 className="text-lg font-bold text-green-800">EDU Plus</h1>
+                     <h1 className="text-lg font-bold text-[#58876A]">EDU Plus</h1>
                   </div>
                </div>
             </div>
          </div>
 
          {/* Main Content */}
-         <div className="mx-auto max-w-7xl px-6 py-8">
+         <div className="mx-auto max-w-7xl bg-white px-6 py-8">
             {/* Welcome Section */}
             <div className="relative mb-8 overflow-hidden rounded-xl bg-[#58876A] p-8 text-white">
                <div>
@@ -82,33 +82,33 @@ export function ProfessorDashboard() {
                <Card className="border-green-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                      <CardTitle className="text-sm font-medium text-gray-600">Total de Turmas</CardTitle>
-                     <BookOpen className="h-4 w-4 text-green-600" />
+                     <BookOpen className="h-4 w-4 text-[#58876A]" />
                   </CardHeader>
                   <CardContent>
-                     <div className="text-2xl font-bold text-green-800">{turmas.length}</div>
-                     <p className="mt-1 text-xs text-green-600">{turmas.filter((t) => t.ativa).length} ativas</p>
+                     <div className="text-2xl font-bold text-[#58876A]">{turmas.length}</div>
+                     <p className="mt-1 text-xs text-[#58876A]">{turmas.filter((t) => t.ativa).length} ativas</p>
                   </CardContent>
                </Card>
 
                <Card className="border-green-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                      <CardTitle className="text-sm font-medium text-gray-600">Total de Alunos</CardTitle>
-                     <Users className="h-4 w-4 text-green-600" />
+                     <Users className="h-4 w-4 text-[#58876A]" />
                   </CardHeader>
                   <CardContent>
-                     <div className="text-2xl font-bold text-green-800">{totalAlunos}</div>
-                     <p className="mt-1 text-xs text-green-600">Distribuídos em {turmas.length} turmas</p>
+                     <div className="text-2xl font-bold text-[#58876A]">{totalAlunos}</div>
+                     <p className="mt-1 text-xs text-[#58876A]">Distribuídos em {turmas.length} turmas</p>
                   </CardContent>
                </Card>
 
                <Card className="border-green-100">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                      <CardTitle className="text-sm font-medium text-gray-600">Total de Listas</CardTitle>
-                     <Clock className="h-4 w-4 text-green-600" />
+                     <Clock className="h-4 w-4 text-[#58876A]" />
                   </CardHeader>
                   <CardContent>
-                     <div className="text-2xl font-bold text-green-800">{totalListas}</div>
-                     <p className="mt-1 text-xs text-green-600">Listas de exercícios criadas</p>
+                     <div className="text-2xl font-bold text-[#58876A]">{totalListas}</div>
+                     <p className="mt-1 text-xs text-[#58876A]">Listas de exercícios criadas</p>
                   </CardContent>
                </Card>
             </div>
