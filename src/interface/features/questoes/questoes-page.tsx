@@ -11,7 +11,8 @@ import { Input } from "@/interface/components/ui/input";
 import { Label } from "@/interface/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/interface/components/ui/select";
 import { useSession } from "@/interface/hooks/useSession";
-import { HabilidadeBNCC, QuestionType, SerieLevel, UserRole } from "@prisma/client";
+import type { HabilidadeBNCC } from "@prisma/client";
+import { QuestionType, SerieLevel, UserRole } from "@prisma/client";
 
 // Mapeamento para exibição dos tipos de questão
 const TIPOS_QUESTAO_LABELS = {

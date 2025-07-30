@@ -166,7 +166,7 @@ export function CriarListaModal({
                   {questoesSelecionadas.length > 0 && (
                      <div className="rounded-lg bg-green-50 p-3">
                         <p className="text-sm text-green-800">
-                           ✅ {questoesSelecionadas.length} questão(ões) selecionada(s)
+                           {questoesSelecionadas.length} questão(ões) selecionada(s)
                         </p>
                      </div>
                   )}

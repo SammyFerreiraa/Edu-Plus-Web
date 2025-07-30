@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
+import { CadastroPage } from "@/interface/features/cadastro";
 
-export default function CadastroPage() {
-   // Redirecionar para login por enquanto
-   redirect("/login");
+export default function Page() {
+   return <CadastroPage />;
 }

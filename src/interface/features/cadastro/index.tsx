@@ -3,34 +3,35 @@
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import type { ILogin } from "@/common/schemas/user";
-import { loginSchema } from "@/common/schemas/user";
+import type { ICadastro } from "@/common/schemas/user";
+import { cadastroSchema } from "@/common/schemas/user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/card";
 import { Button } from "@/interface/components/ui/button";
 import { InputForm } from "@/interface/components/ui/input";
 import { authApi } from "@/services/auth-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export const LoginPage = () => {
+export const CadastroPage = () => {
    const {
       formState: { isSubmitting },
       control,
       handleSubmit
-   } = useForm<ILogin>({
-      resolver: zodResolver(loginSchema),
+   } = useForm<ICadastro>({
+      resolver: zodResolver(cadastroSchema),
       mode: "onChange",
       defaultValues: {
+         nome: "",
          email: ""
       }
    });
 
-   const submitWithEmail = async (data: ILogin) => {
+   const submitCadastro = async (data: ICadastro) => {
       try {
-         await authApi.login({ email: data.email });
-         toast.success("Foi enviado um link de acesso para o seu e-mail");
+         await authApi.cadastro({ nome: data.nome, email: data.email });
+         toast.success("Cadastro realizado! Foi enviado um link de acesso para o seu e-mail");
       } catch (error) {
-         toast.error("Erro ao fazer login. Tente novamente.");
-         console.error("Erro no login:", error);
+         toast.error("Erro ao fazer cadastro. Tente novamente.");
+         console.error("Erro no cadastro:", error);
       }
    };
 
@@ -60,23 +61,26 @@ export const LoginPage = () => {
             <Card className="w-full max-w-md border border-white/20 bg-white/95 shadow-2xl backdrop-blur-sm">
                <CardHeader>
                   <CardTitle className="text-center text-2xl font-bold text-gray-800">EDU+ Professor</CardTitle>
-                  <p className="text-center text-sm text-gray-600">Acesse sua conta para gerenciar turmas</p>
+                  <p className="text-center text-sm text-gray-600">Crie sua conta para gerenciar turmas</p>
                </CardHeader>
                <CardContent className="space-y-6">
-                  <form className="space-y-4" onSubmit={handleSubmit(submitWithEmail)}>
+                  <form className="space-y-4" onSubmit={handleSubmit(submitCadastro)}>
+                     <div className="space-y-2">
+                        <InputForm name="nome" control={control} label="Nome completo" />
+                     </div>
                      <div className="space-y-2">
                         <InputForm name="email" control={control} label="E-mail" />
                      </div>
                      <Button type="submit" className="w-full" isLoading={isSubmitting}>
-                        Entrar com E-mail
+                        Cadastrar
                      </Button>
                   </form>
 
                   <div className="border-t pt-4">
-                     <p className="mb-3 text-center text-sm text-gray-600">Não tem uma conta?</p>
-                     <Link href="/cadastro" className="block">
+                     <p className="mb-3 text-center text-sm text-gray-600">Já tem uma conta?</p>
+                     <Link href="/login" className="block">
                         <Button variant="outline" className="w-full">
-                           Criar conta
+                           Fazer login
                         </Button>
                      </Link>
                   </div>

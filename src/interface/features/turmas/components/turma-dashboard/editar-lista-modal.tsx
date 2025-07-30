@@ -229,7 +229,7 @@ export function EditarListaModal({
                      {editandoLista.questoes && editandoLista.questoes.length > 0 && (
                         <div className="rounded-lg bg-green-50 p-3">
                            <p className="text-sm text-green-800">
-                              ✅ {editandoLista.questoes.length} questão(ões) na lista
+                              {editandoLista.questoes.length} questão(ões) na lista
                            </p>
                         </div>
                      )}
