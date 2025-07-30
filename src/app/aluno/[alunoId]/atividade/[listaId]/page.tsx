@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import axios from "axios";
 import { ArrowLeft, BookOpen, CheckCircle, Clock, Lightbulb, Target, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/interface/components/ui/badge";
@@ -9,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components
 import { Input } from "@/interface/components/ui/input";
 import { Label } from "@/interface/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/interface/components/ui/radio-group";
-import { alunoApi, type ListaExerciciosResponse, type QuestaoExercicio } from "@/services/aluno-api";
+import { alunoApi, type ListaExerciciosResponse } from "@/services/aluno-api";
 
 type Props = {
    params: Promise<{ alunoId: string; listaId: string }>;
@@ -33,12 +34,8 @@ export default function AtividadePage({ params }: Props) {
 
    const carregarAtividade = async () => {
       try {
-         const response = await fetch(`/api/aluno/${resolvedParams.alunoId}/atividades/${resolvedParams.listaId}`);
-         if (!response.ok) {
-            throw new Error("Erro ao carregar atividade");
-         }
-         const data = await response.json();
-         setAtividade(data);
+         const response = await alunoApi.obterAtividade(resolvedParams.alunoId, resolvedParams.listaId);
+         setAtividade(response);
          setTempoInicio(Date.now());
       } catch (error) {
          console.error("Erro ao carregar atividade:", error);
@@ -68,14 +65,12 @@ export default function AtividadePage({ params }: Props) {
          setUltimaResposta(resultado);
          setShowFeedback(true);
 
-         // Atualizar dados da questão atual
          if (atividade && atividade.questoes[questaoAtual]) {
             const novaAtividade = { ...atividade };
             const questaoIndex = questaoAtual;
             const questaoAtualizada = novaAtividade.questoes[questaoIndex];
 
             if (questaoAtualizada) {
-               // Adicionar nova tentativa (sem a propriedade questao que não é necessária aqui)
                const novaTentativa = {
                   id: resultado.id,
                   resposta: resultado.resposta,
@@ -89,7 +84,6 @@ export default function AtividadePage({ params }: Props) {
                questaoAtualizada.acertou = resultado.correta || questaoAtualizada.acertou;
                questaoAtualizada.numeroTentativas += 1;
 
-               // Recalcular progresso
                let questoesRespondidas = 0;
                let questoesCorretas = 0;
 
@@ -125,7 +119,6 @@ export default function AtividadePage({ params }: Props) {
       setTempoInicio(Date.now());
 
       if (isUltimaQuestao) {
-         // Ir para o dashboard com mensagem de conclusão
          router.push(`/aluno/${resolvedParams.alunoId}/dashboard?concluida=${resolvedParams.listaId}`);
       } else {
          setQuestaoAtual(questaoAtual + 1);
@@ -179,13 +172,11 @@ export default function AtividadePage({ params }: Props) {
    }
 
    const opcoes = parseOpcoes(questaoAtualData.opcoes);
-   const jaRespondeu = questaoAtualData.tentativas.length > 0;
    const acertou = questaoAtualData.acertou;
 
    return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
          <div className="container mx-auto px-4 py-6">
-            {/* Header */}
             <div className="mb-8 rounded-2xl border-0 bg-white p-6 shadow-lg">
                <div className="mb-4 flex items-center justify-between">
                   <Button
@@ -199,9 +190,9 @@ export default function AtividadePage({ params }: Props) {
 
                   <div className="flex items-center gap-4">
                      {acertou && (
-                        <Badge className="border-green-200 bg-green-100 text-green-700">
+                        <Badge className="border-green-200 bg-green-100 text-[#58876A]">
                            <CheckCircle className="mr-1 h-3 w-3" />
-                           Concluída ✅
+                           Concluída
                         </Badge>
                      )}
 
@@ -212,11 +203,11 @@ export default function AtividadePage({ params }: Props) {
                </div>
 
                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-blue-600 p-3">
+                  <div className="rounded-full bg-[#58876A] p-3">
                      <BookOpen className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                     <h1 className="mb-1 text-2xl font-bold text-gray-900">{atividade.titulo} 📚</h1>
+                     <h1 className="mb-1 text-2xl font-bold text-gray-900">{atividade.titulo}</h1>
                      {atividade.descricao && <p className="text-gray-600">{atividade.descricao}</p>}
                   </div>
                </div>
@@ -226,7 +217,7 @@ export default function AtividadePage({ params }: Props) {
                   <div className="mb-2 flex justify-between text-sm text-gray-600">
                      <span className="flex items-center gap-1">
                         <Target className="h-4 w-4" />
-                        Progresso da Atividade 🎯
+                        Progresso da Atividade
                      </span>
                      <span>
                         {atividade.progresso.respondidas}/{atividade.progresso.total} questões
@@ -248,24 +239,23 @@ export default function AtividadePage({ params }: Props) {
                      <CardHeader className="rounded-t-xl bg-gradient-to-r from-blue-50 to-purple-50">
                         <div className="flex items-center justify-between">
                            <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
-                              <Target className="h-5 w-5 text-blue-600" />
-                              Questão {questaoAtual + 1} 🤔
+                              <Target className="h-5 w-5 text-[#58876A]" />
+                              Questão {questaoAtual + 1}
                            </CardTitle>
                            <div className="flex gap-2">
                               <Badge variant="secondary" className="px-3 py-1">
                                  {"⭐".repeat(questaoAtualData.dificuldade)} Nível {questaoAtualData.dificuldade}
                               </Badge>
                               <Badge variant="outline" className="px-3 py-1">
-                                 {questaoAtualData.tipo === "MULTIPLA_ESCOLHA" ? "📝 Múltipla Escolha" : "🔢 Numérica"}
+                                 {questaoAtualData.tipo === "MULTIPLA_ESCOLHA" ? "Múltipla Escolha" : "Numérica"}
                               </Badge>
                            </div>
                         </div>
                      </CardHeader>
                      <CardContent className="space-y-6">
-                        {/* Enunciado */}
-                        <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50 p-6">
+                        <div className="rounded-xl py-6">
                            <div className="mb-3 flex items-center gap-2">
-                              <BookOpen className="h-5 w-5 text-blue-600" />
+                              <BookOpen className="h-5 w-5 text-[#58876A]" />
                               <span className="font-semibold text-gray-700">Pergunta:</span>
                            </div>
                            <p className="text-lg leading-relaxed whitespace-pre-wrap text-gray-900">
@@ -273,7 +263,6 @@ export default function AtividadePage({ params }: Props) {
                            </p>
                         </div>
 
-                        {/* Campo de Resposta */}
                         {!showFeedback && (
                            <div className="space-y-4">
                               {questaoAtualData.tipo === "MULTIPLA_ESCOLHA" && opcoes.length > 0 ? (
@@ -287,7 +276,7 @@ export default function AtividadePage({ params }: Props) {
                                              <RadioGroupItem value={opcao.id} id={opcao.id} />
                                              <Label htmlFor={opcao.id} className="flex-1 cursor-pointer">
                                                 <span className="mr-2 font-medium">
-                                                   {String.fromCharCode(65 + index)})
+                                                   {String.fromCharCode(65 + index)}
                                                 </span>
                                                 {opcao.texto}
                                              </Label>
@@ -318,7 +307,7 @@ export default function AtividadePage({ params }: Props) {
                                  <Button
                                     onClick={handleSubmitResposta}
                                     disabled={!resposta.trim() || isSubmitting}
-                                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 py-3 font-semibold text-white hover:from-blue-700 hover:to-purple-700"
+                                    className="flex-1 py-3 font-semibold text-white"
                                  >
                                     {isSubmitting ? (
                                        <div className="flex items-center gap-2">
@@ -326,7 +315,7 @@ export default function AtividadePage({ params }: Props) {
                                           Enviando...
                                        </div>
                                     ) : (
-                                       "Enviar Resposta 🚀"
+                                       "Enviar Resposta"
                                     )}
                                  </Button>
 
@@ -337,14 +326,13 @@ export default function AtividadePage({ params }: Props) {
                                        disabled={isSubmitting}
                                        className="px-6"
                                     >
-                                       ⬅️ Anterior
+                                       Anterior
                                     </Button>
                                  )}
                               </div>
                            </div>
                         )}
 
-                        {/* Feedback da Resposta */}
                         {showFeedback && ultimaResposta && (
                            <div className="space-y-4">
                               <div
@@ -369,9 +357,7 @@ export default function AtividadePage({ params }: Props) {
                                           ultimaResposta.correta ? "text-green-700" : "text-red-700"
                                        }`}
                                     >
-                                       {ultimaResposta.correta
-                                          ? "🎉 Parabéns! Resposta correta!"
-                                          : "😔 Resposta incorreta"}
+                                       {ultimaResposta.correta ? "Parabéns! Resposta correta!" : "Resposta incorreta"}
                                     </h3>
                                  </div>
 
@@ -396,10 +382,10 @@ export default function AtividadePage({ params }: Props) {
                               {ultimaResposta.questao.explicacao && (
                                  <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-5">
                                     <div className="mb-3 flex items-center gap-2">
-                                       <div className="rounded-full bg-blue-500 p-2">
+                                       <div className="rounded-full bg-[#58876A] p-2">
                                           <Lightbulb className="h-4 w-4 text-white" />
                                        </div>
-                                       <h4 className="font-bold text-blue-700">💡 Explicação</h4>
+                                       <h4 className="font-bold text-blue-700">Explicação</h4>
                                     </div>
                                     <p className="text-lg leading-relaxed whitespace-pre-wrap text-gray-700">
                                        {ultimaResposta.questao.explicacao}
@@ -418,15 +404,15 @@ export default function AtividadePage({ params }: Props) {
                                        }}
                                        className="flex-1 border-2 border-orange-300 text-orange-700 hover:bg-orange-50"
                                     >
-                                       🔄 Tentar Novamente
+                                       Tentar Novamente
                                     </Button>
                                  )}
 
                                  <Button
                                     onClick={handleProximaQuestao}
-                                    className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 py-3 font-semibold text-white hover:from-green-700 hover:to-blue-700"
+                                    className="flex-1 py-3 font-semibold text-white"
                                  >
-                                    {isUltimaQuestao ? "🎉 Finalizar Atividade" : "➡️ Próxima Questão"}
+                                    {isUltimaQuestao ? "Finalizar Atividade" : "Próxima Questão"}
                                  </Button>
                               </div>
                            </div>
@@ -435,9 +421,7 @@ export default function AtividadePage({ params }: Props) {
                   </Card>
                </div>
 
-               {/* Sidebar - Resumo e Navegação */}
                <div className="space-y-6">
-                  {/* Estatísticas da Sessão */}
                   <Card>
                      <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-sm">
@@ -463,7 +447,6 @@ export default function AtividadePage({ params }: Props) {
                      </CardContent>
                   </Card>
 
-                  {/* Navegação por Questões */}
                   <Card>
                      <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-sm">
@@ -486,7 +469,7 @@ export default function AtividadePage({ params }: Props) {
                                  disabled={showFeedback}
                                  className={`aspect-square rounded-lg text-sm font-medium transition-all ${
                                     index === questaoAtual
-                                       ? "scale-105 bg-blue-600 text-white shadow-lg"
+                                       ? "scale-105 bg-[#58876A] text-white shadow-lg"
                                        : questao.acertou
                                          ? "border border-green-200 bg-green-100 text-green-700 hover:bg-green-200"
                                          : questao.tentativas.length > 0
@@ -502,7 +485,7 @@ export default function AtividadePage({ params }: Props) {
 
                         <div className="mt-4 space-y-2 text-xs">
                            <div className="flex items-center gap-2">
-                              <div className="h-3 w-3 rounded bg-blue-600"></div>
+                              <div className="h-3 w-3 rounded bg-[#58876A]"></div>
                               <span className="text-gray-600">Atual</span>
                            </div>
                            <div className="flex items-center gap-2">
@@ -521,7 +504,6 @@ export default function AtividadePage({ params }: Props) {
                      </CardContent>
                   </Card>
 
-                  {/* Tentativas Anteriores */}
                   {questaoAtualData.tentativas.length > 0 && (
                      <Card>
                         <CardHeader>

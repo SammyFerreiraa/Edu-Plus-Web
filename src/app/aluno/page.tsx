@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/interface/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/interface/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/interface/components/ui/card";
 import { Input } from "@/interface/components/ui/input";
 import { alunoApi, type AlunoTurmaResponse } from "@/services/aluno-api";
 
@@ -55,9 +55,7 @@ export default function AlunoAcessoPage() {
    };
 
    const formatarCodigo = (valor: string) => {
-      // Remove caracteres não alfanuméricos e converte para maiúsculo
       const limpo = valor.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-      // Limita a 6 caracteres
       return limpo.slice(0, 6);
    };
 
@@ -122,7 +120,7 @@ export default function AlunoAcessoPage() {
 
                         <Button
                            type="submit"
-                           className="h-12 w-full bg-blue-600 text-lg font-semibold text-white hover:bg-blue-700"
+                           className="h-12 w-full bg-[#58876A] text-lg font-semibold text-white"
                            disabled={isLoading || codigoAcesso.length !== 6}
                         >
                            {isLoading ? (

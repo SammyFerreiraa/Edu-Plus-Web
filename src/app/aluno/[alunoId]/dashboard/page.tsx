@@ -30,7 +30,6 @@ export default function AlunoDashboardPage({ params }: Props) {
 
       const carregarDados = async () => {
          try {
-            // Primeiro, tentar carregar dados do localStorage (apenas no cliente)
             const dadosLocalStorage = localStorage.getItem("dadosAluno");
             if (dadosLocalStorage) {
                const dados = JSON.parse(dadosLocalStorage);
@@ -39,12 +38,10 @@ export default function AlunoDashboardPage({ params }: Props) {
                }
             }
 
-            // Carregar atividades
             const atividadesData = await alunoApi.listarAtividades(resolvedParams.alunoId);
             setAtividades(atividadesData);
          } catch (error) {
             console.error("Erro ao carregar dados:", error);
-            // Se não conseguir carregar, redirecionar para a página de acesso
             router.push("/aluno");
          } finally {
             setIsLoading(false);
@@ -90,15 +87,14 @@ export default function AlunoDashboardPage({ params }: Props) {
    return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
          <div className="container mx-auto px-4 py-6">
-            {/* Header */}
             <div className="mb-8 rounded-2xl border-0 bg-white p-6 shadow-lg">
                <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   <div className="flex items-center gap-4">
-                     <div className="rounded-full bg-blue-600 p-3">
+                     <div className="rounded-full bg-[#58876A] p-3">
                         <BookOpen className="h-8 w-8 text-white" />
                      </div>
                      <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Olá, {dadosAluno.nome}! 👋</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">Olá, {dadosAluno.nome}!</h1>
                         <p className="text-gray-600">
                            Turma: {dadosAluno.turma.nome} • {SERIES_LABELS[dadosAluno.turma.serie]}
                         </p>
@@ -116,13 +112,11 @@ export default function AlunoDashboardPage({ params }: Props) {
                </div>
             </div>
 
-            {/* Dashboard Content */}
             <div className="space-y-6">
-               {/* Lista de Atividades */}
                <Card>
                   <CardHeader>
                      <CardTitle className="flex items-center gap-2">
-                        <Play className="h-5 w-5 text-blue-600" />
+                        <Play className="h-5 w-5 text-[#58876A]" />
                         Suas Atividades
                      </CardTitle>
                   </CardHeader>
@@ -167,16 +161,14 @@ export default function AlunoDashboardPage({ params }: Props) {
                                        </span>
                                     )}
                                  </div>
-                                 <Button
-                                    onClick={() => handleIniciarAtividade(atividade.id)}
-                                    className="bg-blue-600 hover:bg-blue-700"
-                                 >
-                                    {atividade.progresso.respondidas === 0
-                                       ? "Iniciar"
-                                       : atividade.progresso.respondidas === atividade.progresso.total
-                                         ? "Revisar"
-                                         : "Continuar"}
-                                 </Button>
+                                 {atividade.progresso.respondidas === 0 && (
+                                    <Button
+                                       onClick={() => handleIniciarAtividade(atividade.id)}
+                                       className="bg-[#58876A] hover:bg-[#58876A]/90"
+                                    >
+                                       Iniciar
+                                    </Button>
+                                 )}
                               </div>
                            </div>
                         ))
