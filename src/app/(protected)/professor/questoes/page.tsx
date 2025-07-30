@@ -15,16 +15,13 @@ import { questoesApi } from "@/services/questoes-api";
 import type { HabilidadeBNCC, SerieLevel } from "@prisma/client";
 import { QuestionType, UserRole } from "@prisma/client";
 
-// Mapeamento para exibição dos tipos de questão
 const TIPOS_QUESTAO_LABELS = {
    [QuestionType.MULTIPLA_ESCOLHA]: "Múltipla Escolha",
    [QuestionType.NUMERO]: "Numérica",
-   // Tipos antigos para compatibilidade (se ainda existirem no banco)
    VERDADEIRO_FALSO: "Verdadeiro/Falso",
    TEXTO_CURTO: "Texto Curto"
 } as const;
 
-// Função para obter o label do tipo de questão
 const getTipoQuestaoLabel = (tipo: QuestionType | string): string => {
    return TIPOS_QUESTAO_LABELS[tipo as keyof typeof TIPOS_QUESTAO_LABELS] || "Tipo Desconhecido";
 };
@@ -65,12 +62,11 @@ type QuestoesListResponse = {
 export default function QuestoesPageWrapper() {
    const { user } = useSession();
    const [filtros, setFiltros] = useState<FiltrosQuestoes>({});
-   const [searchInput, setSearchInput] = useState(""); // Estado para o input de busca
+   const [searchInput, setSearchInput] = useState("");
    const [page, setPage] = useState(0);
    const [questoesData, setQuestoesData] = useState<QuestoesListResponse | null>(null);
    const [isLoading, setIsLoading] = useState(false);
 
-   // Carregar questões
    const loadQuestoes = async () => {
       setIsLoading(true);
       try {
@@ -87,7 +83,6 @@ export default function QuestoesPageWrapper() {
       }
    };
 
-   // Debounce para busca - só aplica o filtro após 500ms sem digitar
    useEffect(() => {
       const debounceTimeout = setTimeout(() => {
          handleFiltroChange("search", searchInput || undefined);
@@ -96,7 +91,6 @@ export default function QuestoesPageWrapper() {
       return () => clearTimeout(debounceTimeout);
    }, [searchInput]);
 
-   // Recarregar quando filtros ou página mudarem
    useEffect(() => {
       void loadQuestoes();
    }, [filtros, page]);

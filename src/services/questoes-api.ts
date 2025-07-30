@@ -52,7 +52,6 @@ type QuestoesListResponse = {
    totalPages: number;
 };
 
-// Configuração base do axios
 const api = axios.create({
    baseURL: "/api",
    headers: {
@@ -60,20 +59,16 @@ const api = axios.create({
    }
 });
 
-// Interceptor para lidar com erros
 api.interceptors.response.use(
    (response) => response,
    (error) => {
-      // Log do erro para debug
       console.error("Erro na API de questões:", error.response?.data || error.message);
 
-      // Relançar o erro para que possa ser tratado pelo componente
       return Promise.reject(error);
    }
 );
 
 export const questoesApi = {
-   // Listar questões com filtros
    list: async (filters?: QuestoesFilters): Promise<QuestoesListResponse> => {
       const searchParams = new URLSearchParams();
 
@@ -107,7 +102,7 @@ export const questoesApi = {
       return response.data;
    },
 
-   // Excluir questão (soft delete)
+   // Excluir questão
    delete: async (id: string): Promise<{ success: boolean }> => {
       const response = await api.delete(`/questoes/${id}`);
       return response.data;

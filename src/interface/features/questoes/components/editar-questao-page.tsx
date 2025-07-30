@@ -41,7 +41,6 @@ export function EditarQuestaoPage({ questaoId }: Props) {
    const [opcoes, setOpcoes] = useState<OpcaoMultiplaEscolha[]>([]);
    const [habilidadesSelecionadas, setHabilidadesSelecionadas] = useState<HabilidadeBNCC[]>([]);
 
-   // Carregar questão
    useEffect(() => {
       const loadQuestao = async () => {
          try {

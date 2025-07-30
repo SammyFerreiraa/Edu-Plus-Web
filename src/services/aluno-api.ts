@@ -1,8 +1,6 @@
 import axios from "axios";
-import type { z } from "zod";
 import type { QuestionType, SerieLevel } from "@prisma/client";
 
-// Tipos para resposta das tentativas
 type TentativaResponse = {
    id: string;
    resposta: string;
@@ -26,7 +24,6 @@ type TentativaResponse = {
    };
 };
 
-// Tipo para questão na lista de exercícios
 type QuestaoExercicio = {
    id: string;
    enunciado: string;
@@ -46,7 +43,6 @@ type QuestaoExercicio = {
    numeroTentativas: number;
 };
 
-// Tipo para lista de exercícios
 type ListaExerciciosResponse = {
    id: string;
    titulo: string;
@@ -63,7 +59,6 @@ type ListaExerciciosResponse = {
    };
 };
 
-// Tipo para dados da turma
 type TurmaResponse = {
    id: string;
    nome: string;
@@ -77,7 +72,6 @@ type TurmaResponse = {
    };
 };
 
-// Tipo para dados do aluno na turma
 type AlunoTurmaResponse = {
    id: string;
    nome: string;
@@ -100,7 +94,6 @@ type AlunoTurmaResponse = {
    }>;
 };
 
-// Tipo para ranking da turma
 type RankingResponse = {
    posicao: number;
    aluno: {
@@ -115,7 +108,6 @@ type RankingResponse = {
    };
 }[];
 
-// Tipo para submissão de resposta
 type SubmitRespostaData = {
    questaoId: string;
    listaId: string;
@@ -169,7 +161,6 @@ export const alunoApi = {
    }
 };
 
-// Exportar tipos para uso nos componentes
 export type {
    AlunoTurmaResponse,
    ListaExerciciosResponse,

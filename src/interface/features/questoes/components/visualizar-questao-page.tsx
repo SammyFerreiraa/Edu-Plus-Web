@@ -28,7 +28,6 @@ export function VisualizarQuestaoPage({ questaoId }: Props) {
    const [isDeleting, setIsDeleting] = useState(false);
    const [error, setError] = useState<string | null>(null);
 
-   // Carregar questão
    useEffect(() => {
       const loadQuestao = async () => {
          try {

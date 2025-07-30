@@ -38,7 +38,6 @@ export function TurmasPage() {
       }
    };
 
-   // Carregar turmas ao montar o componente
    useEffect(() => {
       void loadTurmas();
    }, []);
@@ -67,7 +66,6 @@ export function TurmasPage() {
                {[...Array(6)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
                      <CardContent className="p-4 sm:p-6">
-                        {/* Loading Mobile */}
                         <div className="block sm:hidden">
                            <div className="mb-4">
                               <div className="h-5 w-40 rounded bg-gray-200"></div>
@@ -87,7 +85,6 @@ export function TurmasPage() {
                            </div>
                         </div>
 
-                        {/* Loading Desktop */}
                         <div className="hidden sm:flex sm:items-center sm:justify-between">
                            <div className="flex items-center space-x-6">
                               <div>
@@ -116,7 +113,6 @@ export function TurmasPage() {
 
    return (
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-         {/* Header */}
          <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
                <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Minhas Turmas</h1>
@@ -137,13 +133,11 @@ export function TurmasPage() {
             )}
          </div>
 
-         {/* Lista de Turmas */}
          {turmasData?.turmas && turmasData.turmas.length > 0 ? (
             <div className="space-y-4">
                {turmasData.turmas.map((turma) => (
                   <Card key={turma.id} className="transition-shadow hover:shadow-lg">
                      <CardContent className="p-4 sm:p-6">
-                        {/* Layout Mobile */}
                         <div className="block sm:hidden">
                            <div className="mb-4">
                               <h3 className="text-lg font-semibold text-gray-900">{turma.nome}</h3>
@@ -169,7 +163,6 @@ export function TurmasPage() {
                               </div>
                            </div>
 
-                           {/* Ações Mobile */}
                            {podeGerenciarTurmas &&
                               (user?.role === UserRole.ADMIN || turma.professorId === user?.id) && (
                                  <div className="flex flex-col gap-2">
@@ -201,9 +194,7 @@ export function TurmasPage() {
                               )}
                         </div>
 
-                        {/* Layout Desktop */}
                         <div className="hidden sm:flex sm:items-center sm:justify-between">
-                           {/* Informações principais da turma */}
                            <div className="flex items-center space-x-6">
                               <div>
                                  <h3 className="text-xl font-semibold text-gray-900">{turma.nome}</h3>
@@ -230,7 +221,6 @@ export function TurmasPage() {
                               </div>
                            </div>
 
-                           {/* Ações Desktop */}
                            <div className="flex items-center space-x-2">
                               {podeGerenciarTurmas &&
                                  (user?.role === UserRole.ADMIN || turma.professorId === user?.id) && (

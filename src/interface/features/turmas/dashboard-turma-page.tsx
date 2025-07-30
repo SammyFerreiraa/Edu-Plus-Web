@@ -35,7 +35,6 @@ export function DashboardTurmaPage() {
       dataNascimento?: string;
    } | null>(null);
 
-   // Estados para criar lista de exercícios
    const [dadosLista, setDadosLista] = useState({
       titulo: "",
       descricao: "",
@@ -58,16 +57,13 @@ export function DashboardTurmaPage() {
 
    const utils = apiClient.useUtils();
 
-   // Buscar dados completos da turma
    const { data: turma, isLoading } = apiClient.turmas.byId.useQuery({ id: turmaId! }, { enabled: !!turmaId });
 
-   // Buscar listas de exercícios da turma
    const { data: listasExercicios } = apiClient.listaExercicios.findByTurma.useQuery(
       { turmaId: turmaId! },
       { enabled: !!turmaId }
    );
 
-   // Buscar questões disponíveis para a série da turma
    const { data: questoesDisponiveis } = apiClient.questoes.list.useQuery(
       { serie: turma?.serie },
       { enabled: !!turma?.serie }
@@ -249,7 +245,6 @@ export function DashboardTurmaPage() {
    if (isLoading) {
       return (
          <div className="min-h-screen">
-            {/* Header Mobile/Desktop */}
             <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 sm:space-x-4">
@@ -268,7 +263,6 @@ export function DashboardTurmaPage() {
                </div>
             </div>
 
-            {/* Loading */}
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
                <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {[...Array(6)].map((_, i) => (
@@ -329,14 +323,10 @@ export function DashboardTurmaPage() {
             </div>
          </div>
 
-         {/* Dashboard Content */}
          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-            {/* Stats Cards */}
             <TurmaStats totalAlunos={turma.alunos?.length || 0} totalListas={turma._count?.listas || 0} />
 
-            {/* Main Content - Layout Responsivo */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
-               {/* Lista de Alunos - Ocupa mais espaço em desktop */}
                <div className="lg:col-span-2">
                   <AlunosList
                      alunos={turma.alunos || []}
@@ -346,7 +336,6 @@ export function DashboardTurmaPage() {
                   />
                </div>
 
-               {/* Sidebar - Stack em mobile, sidebar em desktop */}
                <div className="space-y-6">
                   <ListasExercicios
                      listas={listasExercicios || []}
@@ -360,7 +349,6 @@ export function DashboardTurmaPage() {
             </div>
          </div>
 
-         {/* Modals */}
          <AdicionarAlunoModal
             isOpen={mostrarFormulario}
             onClose={() => setMostrarFormulario(false)}

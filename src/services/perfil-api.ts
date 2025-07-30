@@ -5,7 +5,6 @@ const api = axios.create({
    timeout: 10000
 });
 
-// Interceptor para tratar erros
 api.interceptors.response.use(
    (response) => response,
    (error) => {

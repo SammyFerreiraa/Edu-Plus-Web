@@ -3,13 +3,11 @@ import type { z } from "zod";
 import type { cadastrarAlunoSchema, editarAlunoSchema } from "@/common/schemas/aluno";
 import type { turmaCreateSchema, turmaUpdateSchema } from "@/common/schemas/edu-plus";
 
-// Tipos baseados nos schemas
 type TurmaCreateData = z.infer<typeof turmaCreateSchema>;
 type TurmaUpdateData = z.infer<typeof turmaUpdateSchema>;
 type CadastrarAlunoData = z.infer<typeof cadastrarAlunoSchema>;
 type EditarAlunoData = z.infer<typeof editarAlunoSchema>;
 
-// Configuração base do axios
 const api = axios.create({
    baseURL: "/api",
    headers: {
@@ -17,14 +15,11 @@ const api = axios.create({
    }
 });
 
-// Interceptor para lidar com erros
 api.interceptors.response.use(
    (response) => response,
    (error) => {
-      // Log do erro para debug
       console.error("Erro na API:", error.response?.data || error.message);
 
-      // Relançar o erro para que possa ser tratado pelo componente
       return Promise.reject(error);
    }
 );

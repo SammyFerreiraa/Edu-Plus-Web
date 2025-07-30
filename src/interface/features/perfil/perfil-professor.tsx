@@ -76,32 +76,6 @@ export function PerfilProfessor() {
       setError(null);
    };
 
-   const getRoleLabel = (role: string) => {
-      switch (role) {
-         case "PROFESSOR":
-            return "Professor";
-         case "ADMIN":
-            return "Administrador";
-         case "ALUNO":
-            return "Aluno";
-         default:
-            return role;
-      }
-   };
-
-   const getRoleColor = (role: string) => {
-      switch (role) {
-         case "PROFESSOR":
-            return "bg-blue-500";
-         case "ADMIN":
-            return "bg-red-500";
-         case "ALUNO":
-            return "bg-green-500";
-         default:
-            return "bg-gray-500";
-      }
-   };
-
    if (loading) {
       return (
          <div className="flex min-h-[400px] items-center justify-center">
@@ -150,7 +124,7 @@ export function PerfilProfessor() {
                      )}
                   </div>
                   <CardTitle className="text-xl">{userData.name || "Nome não informado"}</CardTitle>
-                  <Badge className={`${getRoleColor(userData.role)} text-white`}>{getRoleLabel(userData.role)}</Badge>
+                  <Badge className="bg-[#58876A] text-white">Professor</Badge>
                </CardHeader>
                <CardContent className="space-y-3">
                   <div>
